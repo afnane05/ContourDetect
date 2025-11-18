@@ -3,23 +3,54 @@ import numpy as np
 
 def apply_prewitt(image):
     """
-    Apply Prewitt edge detection filter
+    Manual implementation of Prewitt edge detection
     """
     # Convert to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    if len(image.shape) == 3:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = image
     
-    # Prewitt kernels
-    kernel_x = np.array([[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]])
-    kernel_y = np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]])
+    # Normalize to 0-1
+    gray = gray.astype(np.float32) / 255.0
     
-    # Apply kernels
-    prewitt_x = cv2.filter2D(gray, cv2.CV_64F, kernel_x)
-    prewitt_y = cv2.filter2D(gray, cv2.CV_64F, kernel_y)
+    # Define Prewitt kernels
+    prewitt_x = np.array([
+        [-1, 0, 1],
+        [-1, 0, 1],
+        [-1, 0, 1]
+    ], dtype=np.float32)
     
-    # Calculate magnitude
-    prewitt_magnitude = np.sqrt(prewitt_x**2 + prewitt_y**2)
+    prewitt_y = np.array([
+        [-1, -1, -1],
+        [ 0,  0,  0],
+        [ 1,  1,  1]
+    ], dtype=np.float32)
     
-    # Normalize to 0-255
-    prewitt_magnitude = np.uint8(255 * prewitt_magnitude / np.max(prewitt_magnitude))
+    # Get image dimensions
+    height, width = gray.shape
     
-    return prewitt_magnitude
+    # Initialize gradient arrays
+    gradient_x = np.zeros_like(gray)
+    gradient_y = np.zeros_like(gray)
+    
+    # Apply convolution manually
+    for i in range(1, height-1):
+        for j in range(1, width-1):
+            # Extract 3x3 region
+            region = gray[i-1:i+2, j-1:j+2]
+            
+            # Compute gradients
+            gx = np.sum(region * prewitt_x)
+            gy = np.sum(region * prewitt_y)
+            
+            gradient_x[i, j] = gx
+            gradient_y[i, j] = gy
+    
+    # Calculate gradient magnitude
+    gradient_magnitude = np.sqrt(gradient_x**2 + gradient_y**2)
+    
+    # Normalize to 0-255 for display
+    gradient_magnitude = np.uint8(255 * gradient_magnitude / np.max(gradient_magnitude))
+    
+    return gradient_magnitude
