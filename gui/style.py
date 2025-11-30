@@ -14,14 +14,15 @@ def configure_styles():
     style.configure("TLabelframe.Label", background="#f0f0f0", font=("Arial", 11, "bold"))
     
     # Custom style for image labels
-    style.configure("ImageLabel.TLabel", 
-                   background="#ffffff",
-                   relief="solid",
-                   borderwidth=1,
-                   anchor="center",
-                   font=("Arial", 10, "italic"))
-    
-    # Configure spinbox
-    style.configure("TSpinbox", font=("Arial", 9))
-    
+    style.configure(
+        "ImageLabel.TLabel",
+        background="#ffffff",
+        relief="solid",
+        borderwidth=1,
+        anchor="center",
+        font=("Arial", 10, "italic")
+    )
+
+    # Spinbox style removed (no longer used)
+
     return style

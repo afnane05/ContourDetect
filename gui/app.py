@@ -131,37 +131,30 @@ class ImageFilterApp:
     def apply_filter(self, event=None):
         if self.original_cv_image is None:
             return
-        
+
         selected_filter = self.filter_var.get()
-        
+
         try:
-            # Show/hide Canny controls
-            if selected_filter == "Canny":
-                self.canny_frame.pack(side=tk.LEFT, padx=10)
-            else:
-                self.canny_frame.pack_forget()
-            
             # Apply selected filter
             if selected_filter == "Sobel":
                 filtered_array = apply_sobel(self.original_cv_image)
             elif selected_filter == "Prewitt":
                 filtered_array = apply_prewitt(self.original_cv_image)
             elif selected_filter == "Canny":
-                threshold1 = self.threshold1_var.get()
-                threshold2 = self.threshold2_var.get()
-                filtered_array = apply_canny(self.original_cv_image, threshold1, threshold2)
+                # Call Canny WITHOUT thresholds → uses OpenCV-like auto thresholds
+                filtered_array = apply_canny(self.original_cv_image)
             elif selected_filter == "Laplacien":
                 filtered_array = apply_laplacian(self.original_cv_image)
             else:
                 return
-            
+
             # Convert to PIL Image for display
             self.filtered_image = Image.fromarray(filtered_array)
             self.display_images()
-            
+
         except Exception as e:
             tk.messagebox.showerror("Error", f"Filter application failed: {str(e)}")
-    
+
     def save_result(self):
         if self.filtered_image is None:
             tk.messagebox.showwarning("Warning", "No filtered image to save")
